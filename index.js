@@ -2,16 +2,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const fs = require('fs');
-const { MongoClient } = require('mongodb'); // Hier importiere ich MongoClient aus mongodb
 const cors = require('cors');               // CORS hinzugefügt
 const app = express();
 const port = process.env.PORT || 3000;      // Falls Port bei azure gibt, wird dieser genommen wenn nicht 3000
-const dbName = 'CleanRedDatabase';          // Set your database name here
 const FILENAME = __dirname + "/scannedbarcodes.json";
 
-// need to be stored in .env
-const mongoUrl = 'mongodb://clean-red-db:9RaOmNUJZaAk9V4j7PUFCJ1hNjJhCCoNsDj2tHkauKxltJ6Q7oz8xdgq7z67C9aTTlHJLhV2WTXaACDbp8Im4g==@clean-red-db.mongo.cosmos.azure.com:10255/?ssl=true&retrywrites=false&replicaSet=globaldb&maxIdleTimeMS=120000&appName=@clean-red-db@';
-const apiKey = 'gnuwZGN4789GZ';
 
 // Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -24,21 +19,6 @@ function log(req, res, next) {
     next();
 }
 app.use(log);
-
-// Verbindung zur MongoDB herstellen, bevor der Server gestartet wird
-async function connectToMongoDB() {
-    try {
-        const client = new MongoClient(mongoUrl, { useUnifiedTopology: true });
-        await client.connect(); // Verbindung zur MongoDB herstellen
-        db = client.db(dbName); // Select the MongoDB database
-        console.log('Connected to MongoDB');
-    } catch (error) {
-        console.error('Error connecting to MongoDB:', error);
-    }
-}
-
-let db;
-connectToMongoDB();
 
 //                            Termins Database Calls 
 //______________________________________________________________________________________________________________
@@ -53,33 +33,6 @@ app.get('/', function (req, res) {
 app.get("/barcodes", function (req, res) {
   fs.readFile(FILENAME, "utf8", function (err, data) {
       res.json(JSON.parse(data));
-  });
-});
-
-app.get("/barcodes/:id", function (req, res) {
-  fs.readFile(FILENAME, "utf8", function (err, data) {
-      const barcode = JSON.parse(data)[req.params.id];
-      res.json(barcode);
-  });
-});
-
-app.put("/barcodes/:id", function (req, res) {
-  fs.readFile(FILENAME, "utf8", function (err, data) {
-      let barcodes = JSON.parse(data);
-      barcodes[req.params.id] = req.body; // direct replacement of the barcode data
-      fs.writeFile(FILENAME, JSON.stringify(barcodes), () => {
-          res.json(barcodes);
-      });
-  });
-});
-
-app.delete("/barcodes/:id", function (req, res) {
-  fs.readFile(FILENAME, "utf8", function (err, data) {
-      let barcodes = JSON.parse(data);
-      barcodes.splice(req.params.id, 1);
-      fs.writeFile(FILENAME, JSON.stringify(barcodes), () => {
-          res.json(barcodes);
-      });
   });
 });
 
