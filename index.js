@@ -1,6 +1,7 @@
 // App-Konstanten
 const express = require('express');
 const bodyParser = require('body-parser');
+const fs = require('fs');
 const { MongoClient } = require('mongodb'); // Hier importiere ich MongoClient aus mongodb
 const cors = require('cors');               // CORS hinzugefügt
 const app = express();
