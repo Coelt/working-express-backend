@@ -7,6 +7,7 @@ const cors = require('cors');               // CORS hinzugefügt
 const app = express();
 const port = process.env.PORT || 3000;      // Falls Port bei azure gibt, wird dieser genommen wenn nicht 3000
 const dbName = 'CleanRedDatabase';          // Set your database name here
+const FILENAME = __dirname + "/scannedbarcodes.json";
 
 // need to be stored in .env
 const mongoUrl = 'mongodb://clean-red-db:9RaOmNUJZaAk9V4j7PUFCJ1hNjJhCCoNsDj2tHkauKxltJ6Q7oz8xdgq7z67C9aTTlHJLhV2WTXaACDbp8Im4g==@clean-red-db.mongo.cosmos.azure.com:10255/?ssl=true&retrywrites=false&replicaSet=globaldb&maxIdleTimeMS=120000&appName=@clean-red-db@';
@@ -50,40 +51,40 @@ app.get('/', function (req, res) {
 
 // Endpoints
 app.get("/barcodes", function (req, res) {
-  fs.readFile(filename, "utf8", function (err, data) {
+  fs.readFile(FILENAME, "utf8", function (err, data) {
       res.json(JSON.parse(data));
   });
 });
 
 app.get("/barcodes/:id", function (req, res) {
-  fs.readFile(filename, "utf8", function (err, data) {
+  fs.readFile(FILENAME, "utf8", function (err, data) {
       const barcode = JSON.parse(data)[req.params.id];
       res.json(barcode);
   });
 });
 
 app.put("/barcodes/:id", function (req, res) {
-  fs.readFile(filename, "utf8", function (err, data) {
+  fs.readFile(FILENAME, "utf8", function (err, data) {
       let barcodes = JSON.parse(data);
       barcodes[req.params.id] = req.body; // direct replacement of the barcode data
-      fs.writeFile(filename, JSON.stringify(barcodes), () => {
+      fs.writeFile(FILENAME, JSON.stringify(barcodes), () => {
           res.json(barcodes);
       });
   });
 });
 
 app.delete("/barcodes/:id", function (req, res) {
-  fs.readFile(filename, "utf8", function (err, data) {
+  fs.readFile(FILENAME, "utf8", function (err, data) {
       let barcodes = JSON.parse(data);
       barcodes.splice(req.params.id, 1);
-      fs.writeFile(filename, JSON.stringify(barcodes), () => {
+      fs.writeFile(FILENAME, JSON.stringify(barcodes), () => {
           res.json(barcodes);
       });
   });
 });
 
 app.post("/barcodes", function (req, res) {
-  fs.readFile(filename, "utf8", function (err, data) {
+  fs.readFile(FILENAME, "utf8", function (err, data) {
       let barcodes = JSON.parse(data);
       let newBarcode = req.body.barcode; // assuming the barcode is sent as { "barcode": "1234567890" }
 
@@ -91,7 +92,7 @@ app.post("/barcodes", function (req, res) {
           barcodes.push(newBarcode);
       }
 
-      fs.writeFile(filename, JSON.stringify(barcodes), () => {
+      fs.writeFile(FILENAME, JSON.stringify(barcodes), () => {
           res.json(barcodes);
       });
   });
