@@ -55,6 +55,17 @@ app.get("/barcodes", function (req, res) {
   });
 });
 
+app.get("/mongoBarcodes", function (req, res) {
+  try{
+      const collection = db.collection(collectionName);
+      const barcodes = await collection.find({}).toArray();
+      return res.json(allAppointments);
+  }   catch(error) {
+      return res.status{500}.json({ error: 'Error retrieving appointments'});
+  }
+      
+});
+
 app.post("/barcodes", function (req, res) {
   fs.readFile(FILENAME, "utf8", function (err, data) {
       let barcodes = JSON.parse(data);
