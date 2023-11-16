@@ -6,6 +6,10 @@ const cors = require('cors');               // CORS hinzugefügt
 const app = express();
 const port = process.env.PORT || 3000;      // Falls Port bei azure gibt, wird dieser genommen wenn nicht 3000
 const FILENAME = __dirname + "/scannedbarcodes.json";
+const { MongoClient } = require('mongodb'); // Hier importiere ich MongoClient aus mongodb
+const dbName = 'Barcode';          // Set your database name here
+const collectionName = 'barcode';
+const mongoUrl = 'mongodb://funktioniert:mfNS3h45A5D8PeGY089bJANCEc34lWdrZlL81vEsHQrBmnNWRq0yUhnpRZIUVc4fMg9YKN5iXVuHACDbGxzylg==@funktioniert.mongo.cosmos.azure.com:10255/?ssl=true&retrywrites=false&maxIdleTimeMS=120000&appName=@funktioniert@';
 
 
 // Middleware
@@ -19,6 +23,21 @@ function log(req, res, next) {
     next();
 }
 app.use(log);
+
+// Verbindung zur MongoDB herstellen, bevor der Server gestartet wird
+async function connectToMongoDB() {
+    try {
+        const client = new MongoClient(mongoUrl, { useUnifiedTopology: true });
+        await client.connect(); // Verbindung zur MongoDB herstellen
+        db = client.db(dbName); // Select the MongoDB database
+        console.log('Connected to MongoDB');
+    } catch (error) {
+        console.error('Error connecting to MongoDB:', error);
+    }
+}
+
+let db;
+connectToMongoDB();
 
 //                            Termins Database Calls 
 //______________________________________________________________________________________________________________
