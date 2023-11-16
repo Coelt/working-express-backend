@@ -59,7 +59,7 @@ app.get("/mongoBarcodes", function (req, res) {
   try{
       const collection = db.collection(collectionName);
       const barcodes = await collection.find({}).toArray();
-      return res.json(allAppointments);
+      return res.json(collectionName);
   }   catch(error) {
       return res.status{500}.json({ error: 'Error retrieving appointments'});
   }
